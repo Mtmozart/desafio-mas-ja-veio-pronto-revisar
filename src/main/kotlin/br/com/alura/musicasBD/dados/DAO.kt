@@ -1,8 +1,9 @@
 package br.com.alura.musicasBD.dados
 
 import javax.persistence.EntityManager
+import javax.persistence.NoResultException
 
-abstract class DAO<TModel,TEntity>(
+abstract class DAO<TModel, TEntity>(
     val manager: EntityManager,
     val entityType: Class<TEntity>
 ) {
@@ -13,7 +14,7 @@ abstract class DAO<TModel,TEntity>(
     open fun getLista(): List<TModel> {
         val query = manager
             .createQuery("FROM ${entityType.simpleName}", entityType)
-        return query.resultList.map{ entity -> toModel(entity)}
+        return query.resultList.map { entity -> toModel(entity) }
     }
 
     open fun adicionar(model: TModel) {
@@ -23,18 +24,24 @@ abstract class DAO<TModel,TEntity>(
         manager.transaction.commit()
     }
 
-    private fun recuperarEntityPeloId(id: Int): TEntity {
+    open fun recuperarEntityPeloId(id: Int): TEntity? {
         val query = manager.createQuery(
             "FROM ${entityType.simpleName} WHERE id = :id",
             entityType
         )
         query.setParameter("id", id)
-        return query.singleResult
+
+        return try {
+            query.singleResult as TEntity
+        } catch (e: NoResultException) {
+            // Log o erro ou faça algum tratamento adicional se necessário
+            null
+        }
     }
 
-    open fun recuperarPeloId(id: Int): TModel {
+    open fun recuperarPeloId(id: Int): TModel? {
         val entity = recuperarEntityPeloId(id)
-        return toModel(entity)
+        return entity?.let { toModel(it) }
     }
 
     open fun apagar(id: Int) {

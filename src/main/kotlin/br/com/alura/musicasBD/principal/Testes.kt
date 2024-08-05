@@ -6,24 +6,24 @@ import br.com.alura.musicasBD.dados.BandaDAO
 import br.com.alura.musicasBD.modelos.Album
 import br.com.alura.musicasBD.modelos.Banda
 
-fun main(){
+fun main() {
+
 
     val manager = Banco.getEntityManager()
-
     val albumDAO = AlbumDAO(manager)
-    val bandaDAO = BandaDAO(manager)
-    val titas = bandaDAO.recuperarPeloId(1)
+    val bandaDao = BandaDAO(manager)
+    val titas = bandaDao.recuperarPeloId(1)
+    val goBack = titas?.let { Album("Go back", it) }
+    val cabecaDeDinossauro = titas?.let { Album("Cabeça de dinossauro", it) }
 
-    val goBack = Album("Go Back", titas)
-    val cabecaDinossauro = Album("Cabeça Dinossauro", titas)
-
-    albumDAO.adicionar(cabecaDinossauro)
-    albumDAO.adicionar(goBack)
-
+    if (cabecaDeDinossauro != null) {
+        albumDAO.adicionar(cabecaDeDinossauro)
+    }
+    if (goBack != null) {
+        albumDAO.adicionar(goBack)
+    }
     val listaAlbuns = albumDAO.getLista()
     println(listaAlbuns)
-
-    manager.close()
 
 
 }

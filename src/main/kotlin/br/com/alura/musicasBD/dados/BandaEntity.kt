@@ -13,4 +13,8 @@ class BandaEntity(
     val descricao: String = "Descrição da banda",
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Int = 0,
-)
+){
+    override fun toString(): String {
+        return "BandaEntity(nome='$nome', descricao='$descricao', id=$id)"
+    }
+}
